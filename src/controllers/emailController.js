@@ -16,9 +16,56 @@ const sendEmails = async (req, res) => {
   });
 
   for (let to of emailList) {
+    // const mailOptions = {
+    //   to,
+    //   subject,
+    //   attachments: [
+    //     {
+    //       filename: resume.originalname,
+    //       content: resume.buffer,
+    //       contentType: resume.mimetype,
+    //     },
+    //   ],
+    // };
     const mailOptions = {
+      from: process.env.EMAIL_USER,
       to,
       subject,
+      html: `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            color: #333;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 20px;
+          }
+          .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <p>${message.replace(/\n/g, "<br>")}</p>
+          <p>Your Faithfully, <br/> Balu Patil <br/> 9373402288</p>
+        </div>
+
+      </body>
+    </html>
+  `,
       attachments: [
         {
           filename: resume.originalname,
@@ -27,6 +74,7 @@ const sendEmails = async (req, res) => {
         },
       ],
     };
+
     try {
       await transporter.sendMail(mailOptions);
       console.log(`Email sent to: ${to}`);
@@ -35,7 +83,7 @@ const sendEmails = async (req, res) => {
     }
     await new Promise((resolve) => setTimeout(resolve, 1000));
   }
-  res.status(200).json({ success: true, message: 'Emails sent' });
+  res.status(200).json({ success: true, message: "Emails sent" });
 };
 
 module.exports = { sendEmails };
